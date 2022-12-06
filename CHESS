@@ -1,0 +1,414 @@
+#include <iostream>
+#include <string.h>
+#include <cstring>
+#include <Windows.h>
+#include <iomanip>
+#include <conio.h>
+#include <cctype>
+using namespace std;
+
+string a[8][8], nameplayer1, nameplayer2, select1, select2, re1, re2;
+string player1chest[3][8], player2chest[3][8];
+int yplayer1 = 9, yplayer2 = 9, xplayer1 = 9, xplayer2 = 9;
+char xplayer1c, xplayer2c;
+bool gameover = false, turn1 = true, turn2 = true, player1win = false, player2win = false;
+string substring(string k) {
+	int m = k.length() - 1;
+	k.erase(k.begin() + m);
+	return k;
+}
+void setupchest() {
+	player1chest[0][0] = "xe11";
+	player1chest[0][1] = "ma11";
+	player1chest[0][2] = "tuong11";
+	player1chest[0][3] = "hau1";
+	player1chest[0][4] = "vua1";
+	player1chest[0][5] = "tuong21";
+	player1chest[0][6] = "ma21";
+	player1chest[0][7] = "xe21";
+	player2chest[0][0] = "xe12";
+	player2chest[0][1] = "ma12";
+	player2chest[0][2] = "tuong12";
+	player2chest[0][3] = "hau2";
+	player2chest[0][4] = "vua2";
+	player2chest[0][5] = "tuong22";
+	player2chest[0][6] = "ma22";
+	player2chest[0][7] = "xe22";
+	player1chest[1][0] = "tot11";
+	player1chest[1][1] = "tot21";
+	player1chest[1][2] = "tot31";
+	player1chest[1][3] = "tot41";
+	player1chest[1][4] = "tot51";
+	player1chest[1][5] = "tot61";
+	player1chest[1][6] = "tot71";
+	player1chest[1][7] = "tot81";
+	player2chest[1][0] = "tot12";
+	player2chest[1][1] = "tot22";
+	player2chest[1][2] = "tot32";
+	player2chest[1][3] = "tot42";
+	player2chest[1][4] = "tot52";
+	player2chest[1][5] = "tot62";
+	player2chest[1][6] = "tot72";
+	player2chest[1][7] = "tot82";
+	player1chest[2][0] = "xer1";
+	player1chest[2][1] = "mar1";
+	player1chest[2][2] = "tuongr1";
+	player1chest[2][3] = "haur1";
+	player2chest[2][0] = "xer2";
+	player2chest[2][1] = "mar2";
+	player2chest[2][2] = "tuongr2";
+	player2chest[2][3] = "haur2";
+}
+void SET_COLOR(int color)
+{
+	WORD wColor;
+
+
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	if (GetConsoleScreenBufferInfo(hStdOut, &csbi))
+	{
+		wColor = (csbi.wAttributes & 0xF0) + (color & 0x0F);
+		SetConsoleTextAttribute(hStdOut, wColor);
+	}
+}
+void setup() {
+	SET_COLOR(3);
+	cout << right << setw(50) << "CHIEN THAN CO VUA _ver1.1" << endl;
+	SET_COLOR(4);
+	cout << "Luat choi: " << endl;
+	cout << "Luat choi tuong tu nhu ban choi co vua binh thuong thoi. Leu leu :3" << endl;
+	cout << "Luu y: A B C la don vi cua truc hoanh va 1 2 3 4 5 6... la don vi cua truc tung" << endl;
+	SET_COLOR(7);
+	cout << "Hay nhap ten cua nguoi choi thu 1: ";
+	cin >> nameplayer1;
+	cout << "Hay nhap ten cua nguoi choi thu 2: ";
+	cin >> nameplayer2;
+	for (int i = 0; i < 8; ++i) {
+		for (int j = 0; j < 8; ++j) {
+			a[i][j] = "   ";
+		}
+	}
+	a[0][0] = player1chest[0][0];
+	a[0][1] = player1chest[0][1];
+	a[0][2] = player1chest[0][2];
+	a[0][3] = player1chest[0][3];
+	a[0][4] = player1chest[0][4];
+	a[0][5] = player1chest[0][5];
+	a[0][6] = player1chest[0][6];
+	a[0][7] = player1chest[0][7];
+	a[7][0] = player2chest[0][0];
+	a[7][1] = player2chest[0][1];
+	a[7][2] = player2chest[0][2];
+	a[7][3] = player2chest[0][3];
+	a[7][4] = player2chest[0][4];
+	a[7][5] = player2chest[0][5];
+	a[7][6] = player2chest[0][6];
+	a[7][7] = player2chest[0][7];
+	a[1][0] = player1chest[1][0];
+	a[1][1] = player1chest[1][1];
+	a[1][2] = player1chest[1][2];
+	a[1][3] = player1chest[1][3];
+	a[1][4] = player1chest[1][4];
+	a[1][5] = player1chest[1][5];
+	a[1][6] = player1chest[1][6];
+	a[1][7] = player1chest[1][7];
+	a[6][0] = player2chest[1][0];
+	a[6][1] = player2chest[1][1];
+	a[6][2] = player2chest[1][2];
+	a[6][3] = player2chest[1][3];
+	a[6][4] = player2chest[1][4];
+	a[6][5] = player2chest[1][5];
+	a[6][6] = player2chest[1][6];
+	a[6][7] = player2chest[1][7];
+
+}
+void draw() {
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0,0 });
+	int h = 8;
+	char k = 'A';
+	cout << "_____________________________________________________________________________________________________" << endl;
+	for (int i = 0; i < 8; ++i) {
+		cout << left << setw(12) << h--;
+		for (int j = 0; j < 8; ++j) {
+			if (j == 0) cout << "|";
+			if (a[i][j] != "   ") {
+				if (a[i][j][a[i][j].length() - 1] == '1') {
+					if ((i == yplayer1 && j == xplayer1 && turn1 == true)) {
+						SET_COLOR(4);
+						cout << left << setw(10) << substring(a[i][j]);
+						SET_COLOR(7);
+						cout << "|";
+					}
+					else {
+						SET_COLOR(6);
+						cout << left << setw(10) << substring(a[i][j]);
+						SET_COLOR(7);
+						cout << "|";
+					}
+				}
+				else if (a[i][j][a[i][j].length() - 1] == '2') {
+					if (i == yplayer2 && j == xplayer2 && turn2 == true) {
+						SET_COLOR(4);
+						cout << left << setw(10) << substring(a[i][j]);
+						SET_COLOR(7);
+						cout << "|";
+					}
+					else {
+						SET_COLOR(9);
+						cout << left << setw(10) << substring(a[i][j]);
+						SET_COLOR(7);
+						cout << "|";
+					}
+				}
+			}
+			else cout << left << setw(10) << a[i][j] << "|";
+		}
+		cout << endl;
+		cout << "____________|__________|__________|__________|__________|__________|__________|__________|__________|" << endl;
+	}
+	cout << left << setw(12) << "Y/X";
+	for (int i = 0; i < 8; ++i) {
+		if (i == 0) cout << "|";
+		cout << left << setw(10) << k++ << "|";
+	}
+	cout << endl;
+	cout << "____________|__________|__________|__________|__________|__________|__________|__________|__________|" << endl;
+}
+void chartoint1(char k) {
+	switch (k) {
+	case 'A':
+	case 'a':
+		xplayer1 = 0;
+		break;
+	case 'B':
+	case 'b':
+		xplayer1 = 1;
+		break;
+	case 'C':
+	case 'c':
+		xplayer1 = 2;
+		break;
+	case 'D':
+	case 'd':
+		xplayer1 = 3;
+		break;
+	case 'E':
+	case 'e':
+		xplayer1 = 4;
+		break;
+	case 'F':
+	case 'f':
+		xplayer1 = 5;
+		break;
+	case 'G':
+	case 'g':
+		xplayer1 = 6;
+		break;
+	case 'H':
+	case 'h':
+		xplayer1 = 7;
+		break;
+	}
+}
+void chartoint2(char k) {
+	switch (k) {
+	case 'A':
+	case 'a':
+		xplayer2 = 0;
+		break;
+	case 'B':
+	case 'b':
+		xplayer2 = 1;
+		break;
+	case 'C':
+	case 'c':
+		xplayer2 = 2;
+		break;
+	case 'D':
+	case 'd':
+		xplayer2 = 3;
+		break;
+	case 'E':
+	case 'e':
+		xplayer2 = 4;
+		break;
+	case 'F':
+	case 'f':
+		xplayer2 = 5;
+		break;
+	case 'G':
+	case 'g':
+		xplayer2 = 6;
+		break;
+	case 'H':
+	case 'h':
+		xplayer2 = 7;
+		break;
+	}
+}
+void iplayer1() {
+func:
+	turn1 = true;
+	turn2 = false;
+	cout << "Toi luot " << nameplayer1 << " roi. Hay nhap hoanh do va tung do cua quan ban muon di chuyen." << endl;
+	cout << "Hoanh do: ";
+	cin >> xplayer1c;
+	cout << "Tung do: ";
+	cin >> yplayer1;
+	chartoint1(xplayer1c);
+	yplayer1 = 8 - yplayer1;
+	if (a[yplayer1][xplayer1] == "   " || a[yplayer1][xplayer1][a[yplayer1][xplayer1].length() - 1] == '2') {
+		cout << "Ban phai nhap dung toa do cua minh chu. Nhap lai di ban oi" << endl;
+		goto func;
+	}
+}
+void moveplayer1() {
+func:
+	int prey = yplayer1, prex = xplayer1;
+	cout << "Hay chon nuoc di cho quan co ban da chon." << endl;
+	cout << "Hoanh do: ";
+	cin >> xplayer1c;
+	cout << "Tung do: ";
+	cin >> yplayer1;
+	chartoint1(xplayer1c);
+	yplayer1 = 8 - yplayer1;
+	if (a[yplayer1][xplayer1][a[yplayer1][xplayer1].length() - 1] == '1') {
+		xplayer1 = prex;
+		yplayer1 = prey;
+		cout << "Ban di sai roi, ai cho an quan cua minh. Hay nhap lai di." << endl;
+		goto func;
+	}
+	a[yplayer1][xplayer1] = a[prey][prex];
+	a[prey][prex] = "   ";
+	xplayer1 = 9;
+	yplayer1 = 9;
+	turn2 = true;
+	turn1 = false;
+}
+void iplayer2() {
+func:
+	turn1 = false;
+	turn2 = true;
+	cout << "Toi luot " << nameplayer2 << " roi. Hay nhap hoanh do va tung do cua quan ban muon di chuyen." << endl;
+	cout << "Hoanh do: ";
+	cin >> xplayer2c;
+	cout << "Tung do: ";
+	cin >> yplayer2;
+	yplayer2 = 8 - yplayer2;
+	chartoint2(xplayer2c);
+	if (a[yplayer2][xplayer2] == "   " || a[yplayer2][xplayer2][a[yplayer2][xplayer2].length() - 1] == '1') {
+		cout << "Ban phai nhap dung toa do cua minh chu. Nhap lai di ban oi" << endl;
+		goto func;
+	}
+}
+void moveplayer2() {
+func:
+	int prey = yplayer2, prex = xplayer2;
+	cout << "Hay chon nuoc di cho quan co ban da chon." << endl;
+	cout << "Hoanh do: ";
+	cin >> xplayer2c;
+	cout << "Tung do: ";
+	cin >> yplayer2;
+	chartoint2(xplayer2c);
+	yplayer2 = 8 - yplayer2;
+	if (a[yplayer2][xplayer2][a[yplayer2][xplayer2].length() - 1] == '2') {
+		xplayer2 = prex;
+		yplayer2 = prey;
+		cout << "Ban di sai roi, ai cho an quan cua minh. Hay nhap lai di." << endl;
+		goto func;
+	}
+	a[yplayer2][xplayer2] = a[prey][prex];
+	a[prey][prex] = "   ";
+	yplayer2 = 9;
+	xplayer2 = 9;
+	turn2 = false;
+	turn1 = true;
+}
+void logicplayer1() {
+	player1win = true;
+	for (int i = 0; i < 8; ++i) {
+		for (int j = 0; j < 8; ++j) {
+			if (a[i][j] == player2chest[0][4]) {
+				player1win = false;
+				break;
+			}
+		}
+	}
+}
+void logicplayer2() {
+	player2win = true;
+	for (int i = 0; i < 8; ++i) {
+		for (int j = 0; j < 8; ++j) {
+			if (a[i][j] == player1chest[0][4]) {
+				player2win = false;
+				break;
+			}
+		}
+	}
+}
+void rerole2() {
+	for (int i = 0; i < 8; ++i) {
+		if (a[0][i].substr(0, 3) == "tot") {
+			cout << "Tot cua ban da den nha dich. Ban duoc phong quan roi. ";
+			cout << "Hay nhap quan ma ban muon phong: ";
+			cin >> re2;
+			if (re2 == substring(substring(player2chest[2][0]))) a[0][i] = player2chest[2][0];
+			else if (re2 == substring(substring(player2chest[2][1]))) a[0][i] = player2chest[2][1];
+			else if (re2 == substring(substring(player2chest[2][2]))) a[0][i] = player2chest[2][2];
+			else if (re2 == substring(substring(player2chest[2][3]))) a[0][i] = player2chest[2][3];
+			system("cls");
+			draw();
+			break;
+		}
+	}
+}
+void rerole1() {
+	for (int i = 0; i < 8; ++i) {
+		if (a[7][i].substr(0, 3) == "tot") {
+			cout << "Tot cua ban da den nha dich. Ban duoc phong quan roi. " << endl;
+			cout << "Hay nhap quan ma ban muon phong: ";
+			cin >> re1;
+			if (re1 == substring(substring(player1chest[2][0]))) a[7][i] = player1chest[2][0];
+			else if (re1 == substring(substring(player1chest[2][1]))) a[7][i] = player1chest[2][1];
+			else if (re1 == substring(substring(player1chest[2][2]))) a[7][i] = player1chest[2][2];
+			else if (re1 == substring(substring(player1chest[2][3]))) a[7][i] = player1chest[2][3];
+			system("cls");
+			draw();
+			break;
+		}
+	}
+}
+int main() {
+	setupchest();
+	setup();
+	while (!gameover) {
+		draw();
+		while (turn1 == true) {
+			iplayer1();
+			system("cls");
+			draw();
+			moveplayer1();
+			system("cls");
+			draw();
+			rerole1();
+			logicplayer1();
+		}
+		if (player1win) break;
+		while (turn2 == true) {
+			iplayer2();
+			system("cls");
+			draw();
+			moveplayer2();
+			system("cls");
+			draw();
+			rerole2();
+			logicplayer2();
+		}
+		if (player2win) break;
+	}
+	draw();
+	if (player1win) cout << "Chuc mung " << nameplayer1 << " da chien thang" << endl;
+	else if (player2win) cout << "Chuc mung " << nameplayer2 << " da chien thang" << endl;
+	return 0;
+}
