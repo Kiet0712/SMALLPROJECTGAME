@@ -1,0 +1,136 @@
+#include <iostream>
+#include <conio.h>
+#include <Windows.h>
+using namespace std;
+int xtail[100], ytail[100];
+int nTail;
+string name;
+bool gameover;
+const int width = 140, height = 30;
+int x, y, fruitx, fruity, score;
+enum edirection { STOP, LEFT, RIGHT, UP, DOWN };
+edirection dir;
+void setup() {
+	gameover = false;
+	dir = STOP;
+	x = width / 2;
+	y = height / 2;
+	fruitx = rand() % width;
+	fruity = rand() % height;
+	score = 0;
+}
+void draw() {
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0,0 });
+	for (int i = 0; i < width + 2; ++i) {
+		cout << "#";
+	}
+	cout << endl;
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+			if (j == 0) cout << "#";
+			if (i == y && j == x) cout << name[0];
+			else if (i == fruity && j == fruitx) cout << "@";
+			else {
+				bool print = false;
+				for (int k = 0; k < nTail; k++) {
+					if (xtail[k] == j && ytail[k] == i) {
+						cout << "0";
+						print = true;
+					}
+				}
+				if (!print)
+					cout << " ";
+			}
+			if (j == width - 1) cout << "#";
+		}
+		 cout << endl;
+	}
+	for (int i = 0; i < width + 2; ++i) {
+		cout << "#";
+	}
+	cout << endl;
+	cout << "Your Score: " << score << endl;
+}
+void input() {
+	if (_kbhit()) {
+		switch (_getch()) {
+			case 'a': 
+				dir = LEFT;
+				break;
+			case 'd':
+				dir = RIGHT;
+				break;
+			case 'w':
+				dir = UP;
+				break;
+			case 's':
+				dir = DOWN;
+				break;
+			case 'x': 
+				gameover = true;
+				break;
+		}
+	}
+}
+void logic() {
+	int prevX = xtail[0];
+	int prevY = ytail[0];
+	int pre2X, pre2Y;
+	xtail[0] = x;
+	ytail[0] = y;
+	for (int i = 1; i < nTail; ++i) {
+		pre2X = xtail[i];
+		pre2Y = ytail[i];
+		xtail[i] = prevX;
+		ytail[i] = prevY;
+		prevX = pre2X;
+		prevY = pre2Y;
+	}
+	switch (dir) {
+		case LEFT:
+			x--;
+			break;
+		case RIGHT:
+			x++;
+			break;
+		case UP:
+			y--;
+			break;
+		case DOWN:
+			y++;
+			break;
+	}
+	if (x > width) x = 0; else if (x < 0) x = width - 1;
+	if (y > height)y = 0; else if (y < 0) y = height - 1;
+	if (x == fruitx && y == fruity) {
+		score += 10;
+		fruitx = rand() % width;
+		fruity = rand() % height;
+		nTail++;
+	}
+	for (int t = 1; t < nTail; ++t) {
+		if (xtail[t] == x && ytail[t] == y) gameover = true;
+	}
+}
+void TextColor(int x)
+{
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(h, x);
+}
+int main() {
+	TextColor(6);
+	cout << "Your name: ";
+	cin >> name;
+	cout << "Hi " << name << endl;
+	TextColor(5);
+	Sleep(2000);
+	setup();
+	while (!gameover) {
+		draw();
+		input();
+		if (dir == UP || dir == DOWN) {
+			Sleep(30);
+		}
+		logic();
+	}
+}
